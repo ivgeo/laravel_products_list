@@ -1,96 +1,119 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# REST API за продукти
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Какво представлява проектът
 
-## About Laravel
+REST API за продукти и категории, изградено с Laravel 13 / PHP 8.3. Предоставя ендпойнти за
+листване на продукти (с търсене по текст и филтриране по цена) и категории, с пагинация. API
+документацията (Swagger / OpenAPI) се генерира автоматично от кода и е достъпна на живо през
+браузър, без да се пише отделен спецификационен файл.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Проектът е пакетиран изцяло в Docker: PHP-FPM + Nginx за приложението, MySQL 8 за базата данни, и
+Adminer за преглед на базата през браузър.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Технологичен стек
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend**: PHP 8.4, Laravel 13
+- **База данни**: MySQL 8.0
+- **Уеб сървър**: Nginx (в отделен контейнер, проксира заявките към PHP-FPM)
+- **API документация**: darkaonline/l5-swagger (OpenAPI/Swagger), генерирана автоматично от кода
+- **Тестове**: PHPUnit
+- **Инструменти**: Composer, Docker / Docker Compose, Adminer (уеб интерфейс за MySQL)
 
-## Learning Laravel
+Проектът е чисто API (без потребителски интерфейс) — Vite/Tailwind присъстват в зависимостите като
+стандартна част от Laravel скелета, но не се използват.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Изисквания
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Единственото нещо, което трябва да е инсталирано на компютъра, е **Docker** заедно с **Docker
+Compose** — https://www.docker.com/products/docker-desktop/. Уверете се, че Docker е стартиран,
+преди да продължите.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+Не е нужно да инсталирате PHP, Composer, MySQL или каквото и да е друго локално — всичко се
+случва вътре в контейнерите.
 
-## Agentic Development
+## Стъпка по стъпка: пускане на проекта
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+1. Клонирайте (изтеглете) проекта и влезте в папката му:
+
+   ```bash
+   git clone https://github.com/ivgeo/laravel_products_list.git
+   cd laravel_products_list
+   ```
+
+2. Пуснете целия стек с една команда:
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+   Какво прави тази команда:
+   - Сваля и подготвя нужните Docker образи (само първия път отнема повече време — минута-две).
+   - Инсталира автоматично всички PHP зависимости (Composer).
+   - Копира `.env.example` в `.env`, ако все още няма такъв файл, и генерира ключ на приложението.
+   - Създава базата данни и я **напълва с примерни данни** (продукти, категории, цени), само при
+     самото първо пускане.
+
+   Не е нужно да изпълнявате нищо друго ръчно след тази команда — нито `composer install`, нито
+   `artisan migrate`. Всичко е автоматично.
+
+3. Изчакайте около 30–60 секунди (първия път, докато инсталацията и генерирането на примерните
+   данни завършат), след което отворете в браузър:
+
+   | Какво                  | Адрес                                          |
+   |------------------------|-------------------------------------------------|
+   | Приложението (API)     | http://localhost:8199                            |
+   | API документация       | http://localhost:8199/api/documentation          |
+   | Adminer (преглед на БД)| http://localhost:8198 (виж данни за вход по-долу)|
+
+   Ако видите грешка `502` веднага след стартиране, изчакайте малко и презаредете страницата —
+   контейнерът с базата данни/приложението все още може да се подготвя.
+
+4. За да проверите, че API-то работи, можете директно да отворите в браузър или да изпълните:
+
+   ```bash
+   curl http://localhost:8199/api/products
+   curl http://localhost:8199/api/categories
+   ```
+
+   Би трябвало да получите JSON отговор с примерни продукти/категории.
+
+## Данни за достъп
+
+| Услуга | Адрес                  | Потребител | Парола       | Бележка                          |
+|--------|--------------------------|------------|--------------|-----------------------------------|
+| MySQL  | localhost:3306            | `laravel`  | `secret`     | root парола: `root_secret`        |
+| Adminer| http://localhost:8198     | `laravel`  | `secret`     | Сървър: `mysql`, база: `laravel`  |
+
+## Полезни команди
+
+Всички се изпълняват от папката на проекта, докато контейнерите работят (`docker compose up -d`):
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+docker compose logs -f app         # проследяване на логовете на приложението на живо
+docker compose exec app php artisan test    # пускане на тестовете
+docker compose exec app ./vendor/bin/pint   # проверка на кодовия стил
+docker compose down                # спиране на всички контейнери
+docker compose down -v             # спиране + пълно изтриване на базата данни
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Docker
-
-This project can be run fully containerized: PHP-FPM 8.3 + Nginx for the app, MySQL 8 for the
-database, and Adminer for a web-based DB browser.
-
-**Services**
-
-| Service    | URL / Port              | Notes                              |
-|------------|--------------------------|-------------------------------------|
-| App (API)  | http://localhost:8199    | Nginx → PHP-FPM                     |
-| MySQL      | localhost:3306           | db: `laravel`, user/pass: `laravel`/`secret`, root pass: `root_secret` |
-| Adminer    | http://localhost:8198    | Server: `mysql`, same credentials as above |
-
-**First run**
+Ако искате „чист старт“ (нова база с наново генерирани примерни данни), направете следното:
 
 ```bash
+docker compose down -v
+rm .env
 docker compose up -d --build
-docker compose exec app php artisan migrate
 ```
 
-The app container mounts the project directory, so code changes on the host are picked up
-immediately — no rebuild needed unless `Dockerfile` or PHP extensions change. `APP_KEY` is
-generated automatically on container start if missing.
+## Ако нещо се обърка
 
-**Useful commands**
+- **Портовете 8199 / 8198 / 3306 вече се ползват от друга програма на компютъра ви** — спрете
+  тази програма, или променете портовете от лявата страна в `docker-compose.yml` (напр.
+  `"8299:80"` вместо `"8199:80"`).
+- **Промени в кода не се отразяват** — папката на проекта е директно свързана към контейнера, така
+  че промените би трябвало да важат веднага; нужен е `docker compose up -d --build` наново само
+  ако сте променили `Dockerfile` или PHP разширенията.
+- При всякакви други проблеми, най-бърз начин да видите какво се случва е:
 
-```bash
-docker compose exec app php artisan test      # run the test suite
-docker compose exec app ./vendor/bin/pint     # code style
-docker compose logs -f app                    # tail app logs
-docker compose down                           # stop
-docker compose down -v                        # stop and wipe the MySQL volume
-```
-
-Note: the `mysql` connection is injected via `docker-compose.yml` environment variables and
-overrides whatever `DB_CONNECTION` is set to in your local `.env` (which stays on SQLite for
-non-Docker development, per project convention).
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+  ```bash
+  docker compose logs app
+  ```

@@ -16,8 +16,22 @@ if [ ! -f vendor/autoload.php ]; then
     composer install --no-interaction --no-progress --prefer-dist
 fi
 
-if [ -z "$APP_KEY" ] && [ -f .env ]; then
+FIRST_INIT=false
+if [ ! -f .env ]; then
+    echo "No .env found, copying .env.example -> .env"
+    cp .env.example .env
+    FIRST_INIT=true
+fi
+
+if ! grep -q '^APP_KEY=.\+' .env; then
     php artisan key:generate --ansi
+fi
+
+if [ "$FIRST_INIT" = "true" ]; then
+    echo "First initialization: running migrate:fresh --seed"
+    php artisan migrate:fresh --seed --force
+else
+    php artisan migrate --force
 fi
 
 exec "$@"
