@@ -18,7 +18,7 @@ class ProductController extends Controller
         summary: 'List products',
         tags: ['Products'],
         parameters: [
-            new OA\Parameter(name: 'search', in: 'query', description: 'Matches title (partial) or content (full-text)', schema: new OA\Schema(type: 'string', maxLength: 255)),
+            new OA\Parameter(name: 'search', in: 'query', description: 'Full-text search across title and content, ranked by relevance', schema: new OA\Schema(type: 'string', maxLength: 255)),
             new OA\Parameter(name: 'price_min', in: 'query', description: 'Minimum current price', schema: new OA\Schema(type: 'number', format: 'float', minimum: 0)),
             new OA\Parameter(name: 'price_max', in: 'query', description: 'Maximum current price, must be >= price_min', schema: new OA\Schema(type: 'number', format: 'float', minimum: 0)),
             new OA\Parameter(name: 'page', in: 'query', schema: new OA\Schema(type: 'integer', minimum: 1)),
@@ -49,10 +49,11 @@ class ProductController extends Controller
 
         return ProductResource::collection(
             Product::query()
-                ->when($search, fn (Builder $query, string $search) => $query->where(
-                    fn (Builder $query) => $query->where('title', 'like', "%{$search}%")
-                        ->orWhereFullText('content', $search)
-                ))
+                ->when($search, fn (Builder $query, string $search) => $query
+                    ->selectRaw('products.*, MATCH(title, content) AGAINST (?) as relevance', [$search])
+                    ->whereFullText(['title', 'content'], $search)
+                    ->orderByDesc('relevance')
+                )
                 ->when($priceMin !== null || $priceMax !== null, fn (Builder $query) => $query->whereHas(
                     'currentPrice',
                     fn (Builder $query) => $query
