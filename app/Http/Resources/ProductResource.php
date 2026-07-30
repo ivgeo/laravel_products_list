@@ -17,6 +17,8 @@ class ProductResource extends JsonResource
                 ? (float) $this->currentPrice->price
                 : null),
             'category' => new CategoryResource($this->category),
+            'default_image' => $this->whenLoaded('defaultImage', fn () => new ProductImageResource($this->defaultImage)),
+            'images' => $this->whenLoaded('images', fn () => ProductImageResource::collection($this->images)),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

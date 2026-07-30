@@ -7,6 +7,7 @@ use App\Http\Requests\ProductIndexRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProductController extends Controller
@@ -29,7 +30,12 @@ class ProductController extends Controller
                         ->when($priceMin !== null, fn (Builder $query) => $query->where('price', '>=', $priceMin))
                         ->when($priceMax !== null, fn (Builder $query) => $query->where('price', '<=', $priceMax))
                 ))
-                ->with(['category', 'currentPrice'])
+                ->with([
+                    'category',
+                    'currentPrice',
+                    'defaultImage',
+                    'images' => fn (HasMany $query) => $query->orderBy('sort_order'),
+                ])
                 ->paginate()
         );
     }

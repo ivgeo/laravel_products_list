@@ -39,6 +39,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereSortOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereWidth($value)
+ * @method static \Database\Factories\ProductImageFactory factory($count = null, $state = [])
  *
  * @mixin \Eloquent
  */

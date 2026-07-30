@@ -31,7 +31,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category whereUpdatedAt($value)
  * @method static \Database\Factories\CategoryFactory factory($count = null, $state = [])
- * @property-read \App\Models\CategoryProduct|null $productCount
+ * @property-read CategoryProduct|null $productCount
  * @mixin \Eloquent
  */
 	class Category extends \Eloquent {}
@@ -41,9 +41,9 @@ namespace App\Models{
 /**
  * @property int $category_id
  * @property int $products_count
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Category $category
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Category $category
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CategoryProduct newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CategoryProduct newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CategoryProduct query()
@@ -143,6 +143,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereSortOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereWidth($value)
+ * @method static \Database\Factories\ProductImageFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
 	class ProductImage extends \Eloquent {}
